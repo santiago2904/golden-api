@@ -4,6 +4,9 @@ from openpyxl import Workbook
 from openpyxl.styles import numbers
 
 # Función auxiliar para obtener los impuestos IVA e INC para cada ítem
+
+
+# sapo hpta
 def obtener_impuestos(item):
     iva_tax_amount = 0
     inc_tax_amount = 0
