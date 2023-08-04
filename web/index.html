@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Formulario de carga de archivos XML</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="file"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        input[type="button"] {
+            background-color: #4CAF50;
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        input[type="button"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Subir archivos XML</h1>
+    <form id="formulario">
+        <label for="archivosXML">Archivos XML:</label>
+        <input type="file" id="archivosXML" name="archivosXML[]" accept=".xml" multiple required>
+        <input type="button" value="Enviar" onclick="enviarArchivos()">
+    </form>
+
+    <script>
+        async function enviarArchivos() {
+            const url = "http://localhost:3000/contabilidad/facturas";
+            const formData = new FormData();
+
+            // Obtener los archivos seleccionados y agregarlos al FormData
+            const archivosSeleccionados = document.getElementById("archivosXML").files;
+            for (let i = 0; i < archivosSeleccionados.length; i++) {
+                const archivo = archivosSeleccionados[i];
+                formData.append("archivos", archivo);
+            }
+
+            try {
+
+                const response = await fetch(url, {
+                    method: "POST",
+                    body: formData,
+                });
+                console.log(response);
+
+                if (response.ok) {
+                    // Extraer el blob del cuerpo de la respuesta
+                    const blob = await response.blob();
+
+                    // Crear un enlace y agregarlo al documento
+                    const urlDescarga = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = urlDescarga;
+                    a.download = "facturas.xlsx";
+                    a.click();
+
+                    // Liberar el objeto URL
+                    URL.revokeObjectURL(urlDescarga);
+                } else {
+                    console.error("Error al enviar los archivos.");
+                }
+            } catch (error) {
+                console.error("Error en la solicitud:", error);
+            }
+        }
+    </script>
+</body>
+
+</html>
